@@ -7,10 +7,16 @@ pipeline {
       }
     }
 
-    stage('') {
+    stage('Build') {
       steps {
         sh '''yarn install
 yarn run build'''
+      }
+    }
+
+    stage('') {
+      steps {
+        echo 'COMPLETED'
       }
     }
 
