@@ -14,7 +14,7 @@ yarn run build'''
       }
     }
 
-    stage('') {
+    stage('ECHO') {
       steps {
         echo 'COMPLETED'
       }
