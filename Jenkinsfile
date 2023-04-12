@@ -7,5 +7,12 @@ pipeline {
       }
     }
 
+    stage('') {
+      steps {
+        sh '''yarn install
+yarn run build'''
+      }
+    }
+
   }
 }
