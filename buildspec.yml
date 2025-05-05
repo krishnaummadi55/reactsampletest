@@ -1,28 +1,18 @@
 version: 0.2
 
 phases:
-  install:
-    runtime-versions:
-      nodejs: 20
   pre_build:
     commands:
-      - echo "Jenkins pipeline = $PIPELINE_NAME"
-      - echo Installing dependencies...
-      - npm install
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
   build:
     commands:
       - echo Build started on `date`
-      - npm run build || echo "Build failed or no build script defined"
+      - echo Building the Docker image...          
+      - docker build -t $IMAGE_REPO_NAME:v2 .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:v2     
   post_build:
     commands:
-      - echo Post build phase...
-      - mkdir artifacts
-      - if [ -d build ]; then cp -r build/* artifacts/; fi
-      - if [ -d dist ]; then cp -r dist/* artifacts/; fi
-      - echo Artifacts collected in artifacts/
-
-artifacts:
-  base-directory: artifacts
-  files:
-    - '**/*'
-  name: $PIPELINE_NAME
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:v2
